@@ -1,6 +1,6 @@
 -- task_2.sql
 
--- Use the database created in Task 1
+-- Use the correct database
 USE alx_book_store;
 
 -- Create AUTHORS table
