@@ -3,34 +3,50 @@
 import mysql.connector
 from mysql.connector import Error
 
+def contains_disallowed_keywords(query):
+    """
+    Check if the SQL query contains SELECT or SHOW keywords.
+    """
+    disallowed_keywords = ['SELECT', 'SHOW']
+    upper_query = query.upper()
+    for keyword in disallowed_keywords:
+        if keyword in upper_query:
+            return True
+    return False
+
 def create_database():
     connection = None
     cursor = None
 
     try:
-        # Try connecting to the MySQL server
+        # Connect to the MySQL server
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='your_password_here'  # 🔧 Replace with your actual password
+            password='your_password_here'  # 🔧 Replace with your MySQL password
         )
 
-        # Check if connection is successful
         if connection.is_connected():
             cursor = connection.cursor()
 
-            # ✅ Creating the database (NO SELECT or SHOW used)
-            cursor.execute("CREATE DATABASE IF NOT EXISTS alx_book_store")
-            print("Database 'alx_book_store' created successfully!")
+            # SQL command to create database
+            create_db_query = "CREATE DATABASE IF NOT EXISTS alx_book_store"
 
-    except mysql.connector.Error as err:
-        print(f"❌ Failed to connect or execute query: {err}")
+            # ✅ Check for disallowed SQL keywords
+            if contains_disallowed_keywords(create_db_query):
+                print("❌ Error: SELECT or SHOW statements are not allowed in the SQL query.")
+                return
 
+            # ✅ Execute the safe query
+            cursor.execute(create_db_query)
+            print("✅ Database 'alx_book_store' created successfully!")
+
+    except Error as err:
+        print(f"❌ MySQL error: {err}")
     except Exception as e:
-        print(f"❌ An unexpected error occurred: {e}")
-
+        print(f"❌ Unexpected error: {e}")
     finally:
-        # ✅ Close cursor and connection properly
+        # ✅ Clean resource closure
         if cursor is not None:
             cursor.close()
         if connection is not None and connection.is_connected():
