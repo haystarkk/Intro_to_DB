@@ -8,34 +8,32 @@ def create_database():
     cursor = None
 
     try:
-        # Connect to the MySQL server
+        # Try connecting to the MySQL server
         connection = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='your_password_here'  # 🔧 Replace with your MySQL root password
+            password='your_password_here'  # 🔧 Replace with your actual password
         )
 
+        # Check if connection is successful
         if connection.is_connected():
             cursor = connection.cursor()
 
-            # ✅ Only allowed statement: CREATE DATABASE IF NOT EXISTS
-            create_query = "CREATE DATABASE IF NOT EXISTS alx_book_store"
-            cursor.execute(create_query)
+            # ✅ Creating the database (NO SELECT or SHOW used)
+            cursor.execute("CREATE DATABASE IF NOT EXISTS alx_book_store")
             print("Database 'alx_book_store' created successfully!")
 
-    except Error as err:
-        # ✅ Handle MySQL errors
-        print(f"Error while connecting to MySQL or creating the database: {err}")
+    except mysql.connector.Error as err:
+        print(f"❌ Failed to connect or execute query: {err}")
 
     except Exception as e:
-        # ✅ Handle general Python errors
-        print(f"Unexpected error: {e}")
+        print(f"❌ An unexpected error occurred: {e}")
 
     finally:
-        # ✅ Cleanup resources
-        if cursor:
+        # ✅ Close cursor and connection properly
+        if cursor is not None:
             cursor.close()
-        if connection and connection.is_connected():
+        if connection is not None and connection.is_connected():
             connection.close()
 
 if __name__ == "__main__":
